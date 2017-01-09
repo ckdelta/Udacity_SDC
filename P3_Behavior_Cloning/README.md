@@ -99,13 +99,38 @@ Non-trainable params: 0
 ```
 
 ## Training
+The most dramatic difference in this project is that the training converge very fast, compared to other CNN project. One of the possible reason is the training data is from simulator, which is very clean and less deviation. This indicates three things:
+
+1) It is better to choose adam as optimizer as it remember the previous gradient.
+
+2) Early stopping is necessary, even one more epoch may be a big difference.
+
+3) Tried with learning rate from 0.001 to 0.0001, and at last 0.0001 is used so that slow training would not miss the optima point.
+
+After multiple experiments with the concerns above, I finally choose lr=0.0001, optimizer=adam and loss function is RMSE 
+
+
+### Overfit
+As illustrated above, it is very easy to reach overfitting, so I tried the following methods:
+
+1) Dropout: it doesn't work with my model. It pushes all predictions close to 0.
+
+2) l2 regulation: it works a little bit but not dramatic.
+
+3) early stopping: it is very useful and I take this solution.
 
 
 **[Back to top](#table-of-contents)**
 
 
 ## Tricks
+1) Save the parameters each epoches, and try them on test mode. So that the best fit model can be picked out.
 
+2) As test label (steering angle) is less than one, too many straight driving may lead to network converge to 0. From math point of view, it can be a low gradient result, but it is not useful.
+
+3) The fir_generator is helpful with small DRAM, but I have large enough memory, so I didn't use it. But it should be similar to Tensorflow Image Generator.
+
+4) Observe the test mode in the simulator. For example, if the car drives close to the edge but it doesn't come back to center automatically, it is better to train with more zig-zag data mentioned in chapter 1. For another example, if the car makes a too slow turning at some sharp cases, supply more sharp turning cases in training dataset.
 
 **[Back to top](#table-of-contents)**
 
