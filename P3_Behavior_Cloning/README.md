@@ -128,7 +128,7 @@ As illustrated above, it is very easy to reach overfitting, so I tried the follo
 
 2) As test label (steering angle) is less than one, too many straight driving may lead to network converge to 0. From math point of view, it can be a low gradient result, but it is not useful.
 
-3) The fir_generator is helpful with small DRAM, but I have large enough memory, so I didn't use it. But it should be similar to Tensorflow Image Generator.
+3) The fit_generator is helpful with small DRAM, but I have large enough memory, so I didn't use it. But it should be similar to Tensorflow Image Generator.
 
 4) Observe the test mode in the simulator. For example, if the car drives close to the edge but it doesn't come back to center automatically, it is better to train with more zig-zag data mentioned in chapter 1. For another example, if the car makes a too slow turning at some sharp conditions, supply more sharp turning cases in training dataset.
 
@@ -137,6 +137,7 @@ As illustrated above, it is very easy to reach overfitting, so I tried the follo
 
 ## Demo
 Click the image to Youtube video.
+
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=7nb1KC9DAKU
 " target="_blank"><img src="http://img.youtube.com/vi/7nb1KC9DAKU/0.jpg" 
 alt="IMAGE ALT TEXT HERE" width="240" height="180" border="10" /></a>
