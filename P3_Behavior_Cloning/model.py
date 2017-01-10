@@ -32,6 +32,7 @@ data=np.ndarray(shape=(d_size, 80, 160, 3), dtype=np.float32)
 label=np.ndarray(shape=(d_size,1), dtype=np.float32)
 c=0
 for i in range(len(x)):
+    #Exclude slow data
     if float(x[i][4])>0.7 and float(x[i][6])>15:
         image_t=x[i][0]
         #image_t='IMG/'+x[i][0][42:]
@@ -83,6 +84,7 @@ model.summary()
 filepath='model.h5'
 #model.load_weights(filepath)
 
+#Tunable adam
 #a=keras.optimizers.Adam(lr=0.0001)
 model.compile(loss='mean_squared_error',
               optimizer='adam',
