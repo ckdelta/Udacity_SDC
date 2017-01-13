@@ -119,6 +119,8 @@ As illustrated above, it is very easy to reach overfitting, so I tried the follo
 
 3) early stopping: it is very useful and I take this solution.
 
+4) batch normalization
+
 
 **[Back to top](#table-of-contents)**
 
