@@ -120,6 +120,8 @@ left_init < 210 or left_init > 390 or right_init > 1000 or right_init < 800
 
 3) Because I choose the lane area all the way to very top, however the resolution at the top is not good enough, it makes my final result looks not very stable at the lane end area. It introduces an interesting topic: single camera is not good at long-distance recognition. It needs either another long-focus lens as additional info, or the accuratly detected area need to be shorter.
 
+4) I didn't use too many middle stages, becasue I find that it is easier to find the lane from bottom to top, than guess the lane location at top from previous frame, becasue lane pixels at bottom are a lot more than those at top. 
+
 #Video Demo
 
 https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/p4.mp4
