@@ -94,3 +94,31 @@ cv2.warpPerspective(color_warp, Minv, (img.shape[1], img.shape[0]))
 It looks good, even though there are tree reflection as a disturb to the pipeline.
 
 <img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/final.png" alt="result" title="result" width="512" height="288"/>
+
+#Tricks & Discussion
+It is easy to understand that the pipeline is to add all steps by sequence, however, there are a few tricks need to aplly:
+
+1) Bad data needs to be removed. Because the core idea is to find edge, so any eadge found outside of lane area need to be removed. This is implemented in p4_final.py:
+
+```python
+left_init < 210 or left_init > 390 or right_init > 1000 or right_init < 800
+```
+
+2) Moving average is very useful to make the result smooth. I choose window size as 5 and it looks good.
+```python
+        #Moving Average
+        left.recent.append(left_fit)
+        right.recent.append(right_fit)
+        if len(left.recent) > 5:
+            del left.recent[0]
+            del right.recent[0]
+
+    left_fit=np.mean(left.recent, axis=0)
+    right_fit=np.mean(right.recent, axis=0)
+```
+
+3) Because I choose the lane area all the way to very top, however the resolution at the top is not good enough, it makes my final result looks not very stable at the lane end area. It introduces an interesting topic: single camera is not good at long-distance recognition. It needs either another long-focus lens as additional info, or the accuratly detected area need to be shorter.
+
+#Video Demo
+
+https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/p4.mp4
