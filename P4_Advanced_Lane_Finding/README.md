@@ -68,6 +68,7 @@ However, the h channel thresholding also removes a lot of weak lane lines (espec
 The filtered image looks pretty clean now. Again, I only focus on areas within lanes. (code is at ipnb [213])
 
 <img src="https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/test_images/test5.jpg" alt="Original" title="Original" width="256" height="144"/>
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/curve_wrap.png" alt="Wrap" title="Wrap" width="256" height="144"/>
 <img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/binary_lane.png" alt="Threshold" title="Threshold" width="256" height="144"/>
 
 #Curve Fitting
