@@ -20,6 +20,40 @@ The process can be found in p4_progress.ipynb 2nd cell, at def cam_cal(). After 
 The following is calibration images before and after the process:
 
 <img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/camera_cal/calibration2.jpg" alt="Before" title="Before" width="256" height="144"/>
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/cal_out.png" alt="After" title="After" width="256" height="144"/>
 
 
-#
+
+#Image Undistortion
+After camera matrix is ready, it can be used to undistord camera image by cv2.undistort(img, mtx, dist, None, mtx). Because when deriving perspective transformation matrix, stright lane line is needed, so here I will undistord a straight line image as example:
+
+The following is before and after undistortion:
+
+<img src="https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/test_images/straight_lines1.jpg" alt="Before" title="Before" width="256" height="144"/>
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/straight_lines1_undist.jpg" alt="After" title="After" width="256" height="144"/>
+
+
+#Perspective Transformation
+After undistrted straigh line image is ready, next is to derive perspective transformation matrix. I choose two points on the lane lines closet to bottom and two as far away as possible (accurately capture the pixle point by enlarging the image). Then transform it to 1280x720 spaces. Points I choose are:
+
+```python
+src=np.float32([[246,690], [1056,690], [694,456], [588,456]])
+dst=np.float32([[300,700], [900,700], [900,100],[300,100]])
+M = cv2.getPerspectiveTransform(src, dst)
+Minv = cv2.getPerspectiveTransform(dst, src)
+```
+
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/perspective_trans.png" alt="Transformation" title="Transformation" width="256" height="144"/>
+
+Then, together with camera caliberation data, all can be saved as pickle:
+
+```python
+dist_pickle = {}
+dist_pickle["mtx"] = mtx
+dist_pickle["dist"] = dist
+dist_pickle["m"] = M
+dist_pickle["minv"] = Minv
+pickle.dump( dist_pickle, open( "camera_cal/dist_pickle.p", "wb" ) )
+```
+
+
