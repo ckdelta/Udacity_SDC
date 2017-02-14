@@ -43,7 +43,7 @@ M = cv2.getPerspectiveTransform(src, dst)
 Minv = cv2.getPerspectiveTransform(dst, src)
 ```
 
-<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/perspective_trans.png" alt="Transformation" title="Transformation" width="256" height="144"/>
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/perspective_trans.png" alt="Transformation" title="Transformation" width="512" height="288"/>
 
 Then, together with camera caliberation data, all can be saved as pickle:
 
@@ -65,6 +65,31 @@ First of all, the reflection is not as bright as lane line, so I plan to use s o
 
 However, the h channel thresholding also removes a lot of weak lane lines (especailly right lane), so I plan to add gradient & direction threshold to add more detail information. After tuning a lot, I chose sx_thresh=(40, 100), dir_thresh=(0.2,1.2).
 
-The filtered image looks pretty clean now. Again, I only focus on areas within lanes.
+The filtered image looks pretty clean now. Again, I only focus on areas within lanes. (code is at ipnb [213])
 
-<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/binary_lane.png" alt="Threshold" title="Threshold" width="256" height="144"/>
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/binary_lane.png" alt="Threshold" title="Threshold" width="512" height="288"/>
+
+#Curve Fitting
+##Polynomial Function
+If curve fitting is applied on binary image directly, noise is too much. So, histogram is used to locate areas in interst first: histogram = np.sum(binary_warped[binary_warped.shape[0]/2:,:], axis=0). Then it is easy to find those points in aggregation and push them into left/right and x/y lists for polynomial fitting: np.polyfit(lefty, leftx, 2)
+
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/polynomial.png" alt="fit" title="fit" width="512" height="288"/>
+
+##Curve diameter
+Once polunomial function coefficients are ready, it is very easy to get diameter by: 
+
+```python
+((1 + (2*left_fit[0]*y_eval + left_fit[1])**2)**1.5) / np.absolute(2*left_fit[0])
+```
+
+The diamters for the image above are: 1769.69167767 1508.82710279(581.109384597 m 495.366464613 m in world space). Quite close to each other.
+
+##Draw back to original image
+After apply the line back the bird-eye image, it is easy to re-transform to original perspective, as inverted trasform matrix Minv is ready:
+
+```python
+cv2.warpPerspective(color_warp, Minv, (img.shape[1], img.shape[0])) 
+```
+It looks good, even though there are tree reflection as a disturb to the pipeline.
+
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/final.png" alt="result" title="result" width="512" height="288"/>
