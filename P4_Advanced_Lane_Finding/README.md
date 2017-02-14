@@ -19,7 +19,7 @@ The process can be found in p4_progress.ipynb 2nd cell, at def cam_cal(). After 
 
 The following is calibration images before and after the process:
 
-<figure><img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/camera_cal/calibration2.jpg" alt="Before" width="256" height="144"><figcaption>Before</figcaption></figure>
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/camera_cal/calibration2.jpg" alt="Before" title="Before" width="256" height="144"/>
 
 
 #
