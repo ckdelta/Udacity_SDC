@@ -56,4 +56,15 @@ dist_pickle["minv"] = Minv
 pickle.dump( dist_pickle, open( "camera_cal/dist_pickle.p", "wb" ) )
 ```
 
+#Gradient & Color Threshold
+Explain in advance, the reason I did perspective transformation first then threshoding is: I only care about the area within lanes, so I focus to tune lane bird-eye binary image clean, rather than tune the whole image area.
 
+By looking at the 6 test images, it is easy to find that test5 is the worst case, as there are reflection and cars as a disturb. So I will show test5 as example but it applies to all other images.
+
+First of all, the reflection is not as bright as lane line, so I plan to use s or h channel threshold to remove the reflection. By tuning a lot, I find h channel offers best result, and here I chose h_thresh=(21, 100). 
+
+However, the h channel thresholding also removes a lot of weak lane lines (especailly right lane), so I plan to add gradient & direction threshold to add more detail information. After tuning a lot, I chose sx_thresh=(40, 100), dir_thresh=(0.2,1.2).
+
+The filtered image looks pretty clean now. Again, I only focus on areas within lanes.
+
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P4_Advanced_Lane_Finding/output_images/binary_lane.png" alt="Threshold" title="Threshold" width="256" height="144"/>
