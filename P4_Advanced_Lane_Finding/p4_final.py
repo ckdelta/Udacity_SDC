@@ -81,6 +81,19 @@ def threshold(img, sobel_kernel, s_thresh, h_thresh, sx_thresh, dir_thresh):
     combined_binary[(h_binary == 1) | ((sxbinary == 1) & (sdbinary == 1)) ] = 1
     return combined_binary
 
+def rad(yvals, x_l, x_r):
+    # Define y-value where we want radius of curvature
+    # I'll choose the maximum y-value, corresponding to the bottom of the image
+    y_eval = np.max(yvals)
+    # Define conversions in x and y from pixels space to meters
+    ym_per_pix = 30/720 # meters per pixel in y dimension
+    xm_per_pix = 3.7/700 # meteres per pixel in x dimension
+    fit_cr_l = np.polyfit(yvals*ym_per_pix, x_l*xm_per_pix, 2)
+    fit_cr_r = np.polyfit(yvals*ym_per_pix, x_r*xm_per_pix, 2)
+    radius_l = ((1 + (2*fit_cr_l[0]*y_eval + fit_cr_l[1])**2)**1.5)/np.absolute(2*fit_cr_l[0])
+    radius_r = ((1 + (2*fit_cr_r[0]*y_eval + fit_cr_r[1])**2)**1.5)/np.absolute(2*fit_cr_r[0])
+    return radius_l, radius_r
+
 
 def pipeline(img):
     undist = cv2.undistort(img, mtx, dist, None, mtx)
@@ -150,30 +163,51 @@ def pipeline(img):
     righty = nonzeroy[right_lane_inds]
 
     # Fit a second order polynomial to each
-    left_fit = np.polyfit(lefty, leftx, 2)
-    right_fit = np.polyfit(righty, rightx, 2)
+    left_cal = np.polyfit(lefty, leftx, 2)
+    right_cal = np.polyfit(righty, rightx, 2)
 
     #Rule out wrong data
-    left_init = left_fit[0]*720*720 + left_fit[1]*720 + left_fit[2]
-    right_init = right_fit[0]*720*720 + right_fit[1]*720 + right_fit[2]
+    left_init = left_cal[0]*720*720 + left_cal[1]*720 + left_cal[2]
+    right_init = right_cal[0]*720*720 + right_cal[1]*720 + right_cal[2]
+    if len(left.recent)>0:
+        left_fit=np.mean(left.recent, axis=0)
+    else:
+        left_fit=[0,0,0]
+    #print(left_fit, left_cal)
     if left_init < 210 or left_init > 390 or right_init > 1000 or right_init < 800:
         print("bad luck")
     else:
+        if left_fit[2]-left_cal[2]>75:
+            print("out lane")
+            left_cal=left_fit
         #Moving Average
-        left.recent.append(left_fit)
-        right.recent.append(right_fit)
+        left.recent.append(left_cal)
+        right.recent.append(right_cal)
         if len(left.recent) > 5:
             del left.recent[0]
             del right.recent[0]
-
+    #Update
     left_fit=np.mean(left.recent, axis=0)
     right_fit=np.mean(right.recent, axis=0)
+
+
 
     #Regulated plot
     ploty = np.linspace(0, binary_warped.shape[0]-1, binary_warped.shape[0] )
     left_fitx = left_fit[0]*ploty**2 + left_fit[1]*ploty + left_fit[2]
     right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
 
+    #Radius calculation
+    xm_per_pix = 3.7/700
+    r_l, r_r = rad(ploty, left_fitx, right_fitx)
+
+    #Position calculation
+    position_real=(right_init+left_init) * xm_per_pix / 2
+    position_ideal = 1280 * xm_per_pix / 2
+    distance_from_center=abs(position_ideal - position_real)
+    #print(position_ideal, distance_from_center)
+    text = 'Left curve: {0:.0f}m, Right curve: {1:.0f}m, Center offset: {2:.0f}cm'.format(r_l, r_r, distance_from_center*100)
+    #print(text)
 
     # Create an image to draw the lines on
     warp_zero = np.zeros_like(binary_warped).astype(np.uint8)
@@ -192,6 +226,7 @@ def pipeline(img):
     newwarp = cv2.warpPerspective(color_warp, Minv, (img.shape[1], img.shape[0]))
     # Combine the result with the original image
     result = cv2.addWeighted(undist, 1, newwarp, 0.3, 0)
+    cv2.putText(result, text, (100,100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
     return result
 
 
