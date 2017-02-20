@@ -105,6 +105,8 @@ It is easy to understand that the pipeline is to add all steps by sequence, howe
 left_init < 210 or left_init > 390 or right_init > 1000 or right_init < 800
 ```
 
+left_init is the bottom x point, which is also used for car center calculation by:  (right_init+left_init)/2
+
 2) Moving average is very useful to make the result smooth. I choose window size as 5 and it looks good.
 ```python
         #Moving Average
