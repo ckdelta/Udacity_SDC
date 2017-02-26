@@ -92,3 +92,19 @@ Test Accuracy of SVC =  0.9901
 Finally, all parameters are saved in pickle to be used to real time processing. 
 
 #Sliding Window Search
+In the begining, I was planning to use multiple size windows to detect cars in near or far away. Later I found if heat map is used, large window can be regenerated with small windows nearby. So the problem becomes to find a smallest window size to catch the most faraway car (smallest car). At the end, I chose the scale size as 1.4 and it proves to reach a good detection resolution.
+
+Except for the most critical parameter scale, there are several paramers to set:
+
+1) ystart(400) and ystop(656) set the vertical area where cars can be present, so that false positive on the air are removed.
+
+2) window size: it works with scale together and here I just use same as the HOG size: 8x8. 
+
+3) cell step: as the window is small enough, putting a step to 2 in between can speed up sliding window search.
+
+The find_cars function is defined in p5_video.py. 
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P5_Vehicle_Detection_CV/output_images/multi_windows.png" alt="Multi-window"/>
+
+#Heatmap Label
+After multi-window detection has been done, a single car is covered by multiple window. If one window is viewed as a heat point, then by accumulating all window can find an uniform output. It is implemented in p5_video.py with function add_heat, apply_threshold, and draw_labeled_bboxes.
+<img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P5_Vehicle_Detection_CV/output_images/window_fusion.png" alt="Heatmap"/>
