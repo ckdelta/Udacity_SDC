@@ -26,9 +26,12 @@ The code is implemented in p5_train.py function convert_color.
 #HOG Features
 The reason to extract HOG feature is that it represents the edge or shape of the image. To extract the feature better, the following parameters need to be tuned:
 
-1) orientations: it determines how many orientation bins are used; the higher, the better resolution
+1) orientations: it determines how many orientation bins are used; the higher, the better resolution;
+
 2) pixels_per_cell: how many pixels one cell can cover; the lower, the higher resolution but more noise and less generalization;
-3) cells_per_block: how many cells to cover the image; the higher, the better resolution but still more noise
+
+3) cells_per_block: how many cells to cover the image; the higher, the better resolution but still more noise;
+
 4) HOG channel: using all color channel will represent the features better
 
 Note that, it is not always good to make the HOG to be high resolution, because it loses general features. 
@@ -60,3 +63,32 @@ The code is implemented in p5_train.py function bin_spatial.
 
 
 #SVM Train and Test
+The vehicle and non-vehicle images are read in sequentially and features are extracted by funtion single_img_features in p5_train.py. The features are insert to a list for future normorlization, shuffle and spit.
+
+```python
+for x in os.listdir("vehicles/"):
+    dir_path = os.path.join("vehicles/", x)
+    for y in os.listdir(dir_path):
+        image_path = os.path.join(dir_path, y)
+        img = mpimg.imread(image_path)
+        feature=single_img_features(img, color_space=color_space,
+                        spatial_size=spatial_size, hist_bins=hist_bins,
+                        orient=orient, pix_per_cell=pix_per_cell,
+                        cell_per_block=cell_per_block,
+                        hog_channel=hog_channel, spatial_feat=spatial_feat,
+                        hist_feat=hist_feat, hog_feat=hog_feat)
+        car_features.append(feature)
+```
+
+After the dataset is randomly split to train and test set, I use linear svc to train the model. The reason to use svc is that svc is to optimize for least error, which match the detection purpose. At the end, I acheive 0.9901 accuracy. 
+
+```
+Using: 11 orientations 8 pixels per cell and 2 cells per block
+Feature vector length: 7386
+3.83 Seconds to train SVC...
+Test Accuracy of SVC =  0.9901
+```
+
+Finally, all parameters are saved in pickle to be used to real time processing. 
+
+#Sliding Window Search
