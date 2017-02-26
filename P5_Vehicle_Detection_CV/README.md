@@ -103,8 +103,27 @@ Except for the most critical parameter scale, there are several paramers to set:
 3) cell step: as the window is small enough, putting a step to 2 in between can speed up sliding window search.
 
 The find_cars function is defined in p5_video.py. 
+
 <img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P5_Vehicle_Detection_CV/output_images/multi_windows.png" alt="Multi-window"/>
 
 #Heatmap Label
 After multi-window detection has been done, a single car is covered by multiple window. If one window is viewed as a heat point, then by accumulating all window can find an uniform output. It is implemented in p5_video.py with function add_heat, apply_threshold, and draw_labeled_bboxes.
+
 <img src="https://github.com/ckdelta/Udacity_SDC/blob/master/P5_Vehicle_Detection_CV/output_images/window_fusion.png" alt="Heatmap"/>
+
+#Tricks & Discussion
+
+1) This project relies on multiple trail and error process, because manual feature extraction is needed. I would like to try with deep learning aproach, such as RCNN for car detection. I believe some of the processing is not neseccary as deep learning pick up feafures by itself.
+
+2) There is a trade off between false positive and detection coverage. In real application, I think it is necessary to give a confidence factor for each prediection. If it's not confident enough, another sensor or algoorithm needs to act as backup.
+
+3) I tried to put all pipeline together with project 4, it looks good except the processing speed becomes much lower, but still good enough to process video at >30Hz. The combination code is at p4_plus.py.
+
+#Video Demo
+My trial error process can be found at P5_progress.ipynb. Traing process is at p5_train.py and video processing is at p5_video.py. Finally, the merge with project4 can be found at p4_plus.py.
+
+Video output is at:
+
+https://github.com/ckdelta/Udacity_SDC/blob/master/P5_Vehicle_Detection_CV/output_images/p5_test.mp4
+
+https://github.com/ckdelta/Udacity_SDC/blob/master/P5_Vehicle_Detection_CV/output_images/p4_plus_p5.mp4
