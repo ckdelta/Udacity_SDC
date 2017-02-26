@@ -1,4 +1,4 @@
-# Project4: Vehicle Detection
+# Project 5: Vehicle Detection
 
 In this project, the ultimate goal is to detect the cars in the front anf draw them out, using manually extracted features and machine learning algorithm.
 
