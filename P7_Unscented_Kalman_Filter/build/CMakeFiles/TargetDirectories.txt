@@ -1,3 +1,0 @@
-/home/lab/Documents/Udacity_SDC/P7_Unscented_Kalman_Filter/build/CMakeFiles/edit_cache.dir
-/home/lab/Documents/Udacity_SDC/P7_Unscented_Kalman_Filter/build/CMakeFiles/rebuild_cache.dir
-/home/lab/Documents/Udacity_SDC/P7_Unscented_Kalman_Filter/build/CMakeFiles/UnscentedKF.dir
