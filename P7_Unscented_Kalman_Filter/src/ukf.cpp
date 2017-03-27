@@ -16,10 +16,10 @@ UKF::UKF() {
   use_radar_ = true;
 
   // Process noise standard deviation longitudinal acceleration in m/s^2
-  std_a_ = 0.2;
+  std_a_ = 0.4;
 
   // Process noise standard deviation yaw acceleration in rad/s^2
-  std_yawdd_ = 0.2;
+  std_yawdd_ = 0.4;
 
   // Laser measurement noise standard deviation position1 in m
   std_laspx_ = 0.015;
@@ -28,17 +28,17 @@ UKF::UKF() {
   std_laspy_ = 0.015;
 
   // Radar measurement noise standard deviation radius in m
-  std_radr_ = 0.3;
+  std_radr_ = 0.5;
 
   // Radar measurement noise standard deviation angle in rad
-  std_radphi_ = 0.0075;
+  std_radphi_ = 0.01;
 
   // Radar measurement noise standard deviation radius change in m/s
-  std_radrd_ = 0.1;
+  std_radrd_ = 0.25;
 
   // initial state vector
   x_ = VectorXd(5);
-
+  x_aug = VectorXd(7);
 
 
   // initial covariance matrix
@@ -48,6 +48,21 @@ UKF::UKF() {
         0, 0, 1000, 0, 0,
         0, 0, 0, 100, 0,
         0, 0, 0, 0, 1;
+
+  Q_ = MatrixXd(2, 2);
+  Q_ << std_a_ * std_a_, 0,
+        0, std_yawdd_ * std_yawdd_;
+  P_aug = MatrixXd(7, 7);
+
+  H_laser_ = MatrixXd(2, 5);
+  H_laser_ << 1, 0, 0, 0, 0,
+          0, 1, 0, 0, 0;
+
+  R_laser_ = MatrixXd(2, 2);
+  R_laser_ << std_laspx_, 0,
+          0, std_laspy_;
+
+
 
   /**
   TODO:
@@ -63,7 +78,7 @@ UKF::UKF() {
 
   // State dimension
   n_x_ = 5;
-
+  n_z = 3;
 
 
   // Set augmented dimension
@@ -74,9 +89,19 @@ UKF::UKF() {
 
   // X_sig initialization
   Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
+  Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
+  Zsig_ = MatrixXd(3, 2 * n_aug_ + 1);
+  z_pred = VectorXd(n_z);
 
   //create vector for weights
   weights_ = VectorXd(2*n_aug_+1);
+
+  S = MatrixXd(n_z,n_z);
+  R = MatrixXd(n_z,n_z);
+  R <<    std_radr_*std_radr_, 0, 0,
+          0, std_radphi_*std_radphi_, 0,
+          0, 0,std_radrd_*std_radrd_;
+  Tc = MatrixXd(n_x_, n_z);
 
 
 }
@@ -159,25 +184,18 @@ void UKF::Prediction(double delta_t) {
   */
 
   //create augmented mean state
-  VectorXd x_aug = VectorXd(7);
   x_aug.head(5)=x_;
   x_aug(5)=0;
   x_aug(6)=0;
 
-  //create augmented covariance matrix
-  MatrixXd Q_ = MatrixXd(2, 2);
-  Q_ << std_a_ * std_a_, 0,
-        0, std_yawdd_ * std_yawdd_;
-  MatrixXd P_aug = MatrixXd(7, 7);
   P_aug.topLeftCorner(5,5) = P_;
   P_aug.bottomRightCorner(2,2) = Q_;
-  //cout << "p1 " << endl;
 
   //create square root matrix
   MatrixXd L = P_aug.llt().matrixL();
 
   //create augmented sigma points
-  MatrixXd Xsig_aug = MatrixXd(n_aug_, 2 * n_aug_ + 1);
+
   Xsig_aug.col(0)  = x_aug;
   for (int i = 0; i< n_aug_; i++)
   {
@@ -278,13 +296,7 @@ void UKF::UpdateLidar(MeasurementPackage measurement_pack) {
 
   You'll also need to calculate the lidar NIS.
   */
-  MatrixXd H_laser_ = MatrixXd(2, 5);
-  H_laser_ << 1, 0, 0, 0, 0,
-          0, 1, 0, 0, 0;
 
-  MatrixXd R_laser_ = MatrixXd(2, 2);
-  R_laser_ << std_laspx_, 0,
-          0, std_laspy_;
 
   VectorXd z_ = measurement_pack.raw_measurements_;
 
@@ -319,7 +331,7 @@ void UKF::UpdateRadar(MeasurementPackage measurement_pack) {
 
   You'll also need to calculate the radar NIS.
   */
-  MatrixXd Zsig_ = MatrixXd(3, 2 * n_aug_ + 1);
+
 
   //transform sigma points into measurement space
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
@@ -343,14 +355,13 @@ void UKF::UpdateRadar(MeasurementPackage measurement_pack) {
   }
 
   //mean predicted measurement
-  VectorXd z_pred = VectorXd(n_z);
   z_pred.fill(0.0);
   for (int i=0; i < 2*n_aug_+1; i++) {
       z_pred = z_pred + weights_(i) * Zsig_.col(i);
   }
 
   //measurement covariance matrix S
-  MatrixXd S = MatrixXd(n_z,n_z);
+
   S.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
     //residual
@@ -365,15 +376,12 @@ void UKF::UpdateRadar(MeasurementPackage measurement_pack) {
   }
 
   //add measurement noise covariance matrix
-  MatrixXd R = MatrixXd(n_z,n_z);
-  R <<    std_radr_*std_radr_, 0, 0,
-          0, std_radphi_*std_radphi_, 0,
-          0, 0,std_radrd_*std_radrd_;
+
   S = S + R;
 
 
   //calculate cross correlation matrix
-   MatrixXd Tc = MatrixXd(n_x_, n_z);
+
   Tc.fill(0.0);
   for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
 

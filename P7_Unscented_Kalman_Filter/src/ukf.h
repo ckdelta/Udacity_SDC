@@ -21,12 +21,23 @@ public:
 
   ///* state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
   VectorXd x_;
+  VectorXd x_aug;
 
   ///* state covariance matrix
   MatrixXd P_;
+  MatrixXd Q_;
+  MatrixXd P_aug;
+  MatrixXd H_laser_;
+  MatrixXd R_laser_;
+  MatrixXd S;
+  MatrixXd R;
+  MatrixXd Tc;
 
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
+  MatrixXd Xsig_aug;
+  MatrixXd Zsig_;
+  VectorXd z_pred;
 
   ///* time when the state is true, in us
   long time_us_;
