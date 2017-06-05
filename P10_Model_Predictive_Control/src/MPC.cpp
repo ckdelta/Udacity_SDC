@@ -53,12 +53,12 @@ class FG_eval {
 
     // A set of coeeficients
     int c_cte = 1000;
-    int c_espi = 500;
+    int c_espi = 100;
     int c_vel = 1;
-    double c_act_steer = 50;
-    int c_act_vel = 25;
-    int c_delta_steer = 250;
-    int c_delta_vel = 125;
+    double c_act_steer = 10;
+    int c_act_vel = 10;
+    int c_delta_steer = 200;
+    int c_delta_vel = 100;
 
     // The cost based on the reference state
     for (int i = 0; i < N; i++) {
