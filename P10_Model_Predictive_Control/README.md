@@ -1,6 +1,5 @@
 # CarND-Controls-MPC
-Self-Driving Car Engineer Nanodegree Program
----
+
 
 ## Model
 1) State: Car position (vx, vy), Car orientation (vpsi), Car speed (v) and cross track error (distance from trajectory), orientation error (difference of car and trajectory orientation).
