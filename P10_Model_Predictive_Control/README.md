@@ -44,7 +44,7 @@ Self-Driving Car Engineer Nanodegree Program
 ## Parameter Tuning
 1) Frequency (dt): If the frequency was long, the actuation will be too far, or say too smooth, cannot react fast enough. If the frequency was short, the actuation will be too close, leading to oscillate.
 ```
-double dt = 0.15;
+double dt = 0.10;
 ```
 
 2) Timestep Length (N): N * dt is the amount of time period that takes into account.
@@ -55,18 +55,18 @@ size_t N = 10;
 3) Error coeeficients:
 ```
 // distance from path
-int c_cte = 1000;
+int c_cte = 20;
 // angle error
-int c_espi = 100;
+int c_espi = 20;
 int c_vel = 1;
 
 // to minimize the actuator, larger value gives smooth control
-double c_act_steer = 10;
+double c_act_steer = 1000;
 int c_act_vel = 10;
 
 // to minimize difference between actuator in sequential timesteps, larger value gives sharp control
 int c_delta_steer = 200;
-int c_delta_vel = 100;
+int c_delta_vel = 10;
 ```
 
 ---
