@@ -7,7 +7,7 @@ using CppAD::AD;
 
 // TODO: Set the timestep length and duration
 size_t N = 10;
-double dt = 0.15;
+double dt = 0.10;
 
 double ref_cte = 0;
 double ref_epsi = 0;
@@ -52,13 +52,13 @@ class FG_eval {
     fg[0] = 0;
 
     // A set of coeeficients
-    int c_cte = 1000;
-    int c_espi = 100;
+    int c_cte = 20;
+    int c_espi = 20;
     int c_vel = 1;
-    double c_act_steer = 10;
+    double c_act_steer = 1000;
     int c_act_vel = 10;
     int c_delta_steer = 200;
-    int c_delta_vel = 100;
+    int c_delta_vel = 10;
 
     // The cost based on the reference state
     for (int i = 0; i < N; i++) {
